@@ -9,19 +9,10 @@ from .serializers import ProfileSerializer, RegisterSerializer
 from .validators import validate_avatar
 
 
-class RegisterView(generics.GenericAPIView):
+class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [permissions.AllowAny]
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response(
-            {"token": token.key, "display_name": user.profile.display_name, "email": user.email},
-            status=status.HTTP_201_CREATED,
-        )
 
 
 class ProfileMeView(generics.RetrieveUpdateAPIView):

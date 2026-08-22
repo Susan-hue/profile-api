@@ -53,3 +53,90 @@ class ProfileAPITests(APITestCase):
         )
         res = self.client.post(self.avatar_url, {"avatar": good_file}, format="multipart")
         self.assertEqual(res.status_code, 200)
+
+
+class RegistrationAPITests(APITestCase):
+    def setUp(self):
+        self.register_url = "/api/profile/register/"
+        self.token_url = "/api/token/"
+
+    def test_valid_registration_succeeds_creates_user_and_profile(self):
+        payload = {
+            "username": "newuser",
+            "email": "newuser@example.com",
+            "full_name": "New User",
+            "password": "ValidStrongPassword123!",
+        }
+        res = self.client.post(self.register_url, payload)
+        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.data["display_name"], "New User")
+        self.assertEqual(res.data["email"], "newuser@example.com")
+        self.assertIn("id", res.data)
+        self.assertNotIn("password", res.data)
+        self.assertNotIn("token", res.data)
+
+        self.assertTrue(User.objects.filter(username="newuser").exists())
+        user = User.objects.get(username="newuser")
+        self.assertEqual(user.profile.display_name, "New User")
+
+    def test_duplicate_username_returns_400(self):
+        User.objects.create_user(username="existinguser", email="existing@example.com", password="Pass1234Word!")
+        payload = {
+            "username": "existinguser",
+            "email": "other@example.com",
+            "full_name": "Test User",
+            "password": "ValidStrongPassword123!",
+        }
+        res = self.client.post(self.register_url, payload)
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("username", res.data)
+
+    def test_duplicate_email_returns_400(self):
+        User.objects.create_user(username="existinguser", email="existing@example.com", password="Pass1234Word!")
+        payload = {
+            "username": "uniqueusername",
+            "email": "existing@example.com",
+            "full_name": "Test User",
+            "password": "ValidStrongPassword123!",
+        }
+        res = self.client.post(self.register_url, payload)
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("email", res.data)
+
+    def test_weak_password_returns_400(self):
+        payload = {
+            "username": "weakpassuser",
+            "email": "weakpass@example.com",
+            "full_name": "Weak Pass User",
+            "password": "password123",
+        }
+        res = self.client.post(self.register_url, payload)
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("password", res.data)
+
+    def test_missing_required_field_returns_400(self):
+        payload = {
+            "username": "noemailuser",
+            "full_name": "No Email User",
+            "password": "ValidStrongPassword123!",
+        }
+        res = self.client.post(self.register_url, payload)
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("email", res.data)
+
+    def test_registration_credentials_can_obtain_token(self):
+        payload = {
+            "username": "loginuser",
+            "email": "loginuser@example.com",
+            "full_name": "Login User",
+            "password": "ValidStrongPassword123!",
+        }
+        reg_res = self.client.post(self.register_url, payload)
+        self.assertEqual(reg_res.status_code, 201)
+
+        login_res = self.client.post(
+            self.token_url,
+            {"username": "loginuser", "password": "ValidStrongPassword123!"},
+        )
+        self.assertEqual(login_res.status_code, 200)
+        self.assertIn("token", login_res.data)
