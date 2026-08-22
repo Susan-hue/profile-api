@@ -10,6 +10,18 @@ export interface Profile {
 
 export function resolveAvatarUrl(avatarPath: string | null | undefined): string | null {
   if (!avatarPath) return null;
+
+  const lower = avatarPath.toLowerCase();
+  if (
+    lower.includes("random.jpg") ||
+    lower.includes("placeholder") ||
+    lower.includes("default.png") ||
+    lower.includes("default.jpg") ||
+    lower.includes("default.webp")
+  ) {
+    return null;
+  }
+
   if (avatarPath.startsWith("http://") || avatarPath.startsWith("https://")) {
     return avatarPath;
   }
@@ -17,6 +29,7 @@ export function resolveAvatarUrl(avatarPath: string | null | undefined): string 
   const cleanPath = avatarPath.startsWith("/") ? avatarPath : `/${avatarPath}`;
   return `${cleanBase}${cleanPath}`;
 }
+
 
 
 export interface TokenResponse {

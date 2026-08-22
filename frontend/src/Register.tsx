@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { register, setToken, ApiError } from "./api";
+import { register, login, setToken, ApiError } from "./api";
 import "./Login.css";
 
 export default function Register() {
@@ -20,9 +20,11 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const { token } = await register(username, email, password, displayName || undefined);
+      await register(username, email, password, displayName || undefined);
+      const { token } = await login(username, password);
       setToken(token);
       navigate("/", { replace: true });
+
     } catch (err) {
       if (err instanceof ApiError && err.status === 400) {
         const body = err.body as Record<string, string[]> | undefined;
