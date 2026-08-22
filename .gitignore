@@ -1,7 +1,19 @@
-venv/
-__pycache__/
-*.pyc
-db.sqlite3
-.env
-media/
+# ── Backend ──
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/db.sqlite3
+backend/.env
+backend/media/
+backend/*.log
+
+# ── Frontend ──
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/*.log
+
+# ── Root ──
 *.log
+.DS_Store

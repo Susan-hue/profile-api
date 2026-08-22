@@ -1,0 +1,93 @@
+:root {
+  /* ── Color tokens ── */
+  --bg-paper: #f3efe6;
+  --ink: #1f1b16;
+  --ink-muted: #5a5249;
+  --brass: #7a6a45;
+  --brass-hover: #695a38;
+  --rule-gray: #d8d1c0;
+  --error-red: #8c3b2e;
+  --off-white: #fafaf7;
+  --paper-edge: #e8e2d4;
+
+  /* ── Type scale ── */
+  --font-serif: "Source Serif 4", "Georgia", serif;
+  --font-mono: "JetBrains Mono", "Consolas", monospace;
+  --font-sans: "Inter", -apple-system, sans-serif;
+
+  /* ── Spacing scale (4px base) ── */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* ── Card dimensions ── */
+  --card-max-width: 640px;
+  --card-padding: var(--sp-10);
+  --photo-size: 120px;
+  --border-width: 1px;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-paper);
+  color: var(--ink);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Fade-in settle animation ── */
+@keyframes fadeSettle {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Loading pulse for placeholder rules ── */
+@keyframes pulseRule {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* ── Utility classes ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
